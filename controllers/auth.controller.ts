@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client"
 import prisma from "../lib/prisma"
 import bcrypt from "bcrypt"
 import validator from "validator"
+import nodemailer from "nodemailer"
 import jwt from "jsonwebtoken"
 
 
@@ -76,7 +77,40 @@ export const login = async (req : any, res : any) => {
 }
 
 export const forgotPassword = async (req : any, res : any) => {
+    const {email} = req.body;
+
+    const user = await prisma.user.findUnique({
+        where: { email }
+    })
+
+    if (!user) {
+        return res.status(404).json({ success: false, message: "User not found" });
+    }
+
     try {
+
+        const secret = process.env.JWT_SECRET + user.password;
+
+        const token = jwt.sign({ userId: user.id, email: user.email }, secret, { expiresIn: "1h" });
+
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: process.env.EMAIL,
+                pass: process.env.EMAIL_PASSWORD
+            }
+        });
+
+        const mailOptions = {
+            from: process.env.EMAIL,
+            to: email,
+            subject: "Password Reset Request",
+            text: `To reset your password, visit this link: http://localhost:3000/reset-password/${token}`
+        };
+
+        await transporter.sendMail(mailOptions);
+        
+        return res.status(200).json({ success: true, message: "Password reset email sent successfully" });
      
     } catch (error) {
      console.log(error)
