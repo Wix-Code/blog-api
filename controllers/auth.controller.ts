@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client"
 import prisma from "../lib/prisma"
 import bcrypt from "bcrypt"
+import validator from "validator"
 import jwt from "jsonwebtoken"
 
 
@@ -17,7 +18,7 @@ export const register = async (req : any, res : any) => {
     }
 
     // validate email format
-    if (email != "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"){
+    if (!validator.isEmail(email)){
         return res.status(400).json({ success: false, message: "Invalid email format" });
     }
     
