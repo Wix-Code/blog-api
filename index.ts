@@ -2,6 +2,9 @@ import express, { response } from "express"
 import authUsers from "../server/routes/auth.route"
 import postBlog from "../server/routes/post.route"
 import cors from "cors"
+import dotenv from "dotenv"
+
+dotenv.config();
 
 const app = express();
 
