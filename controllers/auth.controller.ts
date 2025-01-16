@@ -59,16 +59,17 @@ export const login = async (req : any, res : any) => {
             return res.status(401).json({ success: false, message: "Invalid email or password" });
         }
         
-        const isPasswordValid = await bcrypt.compare(password, user.password);
+        const isPasswordValid = await bcrypt.compare(req.body.password, user.password);
         
         if (!isPasswordValid) {
             return res.status(401).json({ success: false, message: "Invalid email or password" });
         }
 
+        const {password, ...info} = user
         // generate JWT token
         const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET as string, { expiresIn: "1h" });
 
-        return res.json({ success: true, message: "Login successful", token });
+        return res.cookie("accessToken", token, { httpOnly: true}).json({ success: true, message: "Login successful", info, token });
     } catch (error) {
         console.log(error);
     }
@@ -76,8 +77,12 @@ export const login = async (req : any, res : any) => {
 
 export const logout = async (req : any, res : any) => {
     try {
-        
+        res.clearCookie("accessToken").json({
+            success: true,
+            message: "Logout successful"
+        })
     } catch (error) {
-        
+        console.log(error);
+        return res.status(500).json({ success: false, message: "Logout failed" });
     }
 }
