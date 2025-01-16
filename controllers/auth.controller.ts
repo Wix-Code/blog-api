@@ -75,6 +75,22 @@ export const login = async (req : any, res : any) => {
     }
 }
 
+export const forgotPassword = async (req : any, res : any) => {
+    try {
+     
+    } catch (error) {
+     console.log(error)
+    }
+}
+
+export const resetPassword = async (req : any, res : any) => {
+    try {
+        
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 export const logout = async (req : any, res : any) => {
     try {
         res.clearCookie("accessToken").json({
@@ -85,4 +101,12 @@ export const logout = async (req : any, res : any) => {
         console.log(error);
         return res.status(500).json({ success: false, message: "Logout failed" });
     }
+}
+
+export const userDetailsUpdate = async (req : any, res : any) => {
+   try {
+    
+   } catch (error) {
+    console.log(error)
+   }
 }
